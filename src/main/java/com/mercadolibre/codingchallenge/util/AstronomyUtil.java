@@ -10,6 +10,14 @@ import com.mercadolibre.codingchallenge.enums.RotationType;
 import com.mercadolibre.codingchallenge.pojo.Planet;
 import com.mercadolibre.codingchallenge.pojo.Triangle;
 
+/**
+ * Clase que permite a sus clientes abstraer el problema matemático o
+ * trigonométrico de fondo al hablar en términos de "negocio" (astronómico en
+ * este caso)
+ * 
+ * @author andres
+ *
+ */
 public class AstronomyUtil {
 
 	private static final Point SUN = new Point(0, 0);
