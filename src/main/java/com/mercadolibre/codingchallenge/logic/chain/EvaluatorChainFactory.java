@@ -15,8 +15,8 @@ public final class EvaluatorChainFactory {
 	}
 
 	private static PlanetsPositionEvaluator createEvaluator() {
-		PlanetsPositionEvaluator planetsInTriangleWithSunInsideEvaluator = new PlanetsInTriangleWithSunInsideEvaluator(
-				null);
+		PlanetsPositionEvaluator fallbackEvaluator = new FallbackEvaluator(null);
+		PlanetsPositionEvaluator planetsInTriangleWithSunInsideEvaluator = new PlanetsInTriangleWithSunInsideEvaluator(fallbackEvaluator);
 		PlanetsPositionEvaluator planetsButNotSunAlignedEvaluator = new PlanetsButNotSunAlignedEvaluator(
 				planetsInTriangleWithSunInsideEvaluator);
 
