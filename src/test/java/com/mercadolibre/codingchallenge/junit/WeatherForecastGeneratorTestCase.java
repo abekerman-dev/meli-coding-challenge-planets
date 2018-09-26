@@ -22,14 +22,9 @@ import com.mercadolibre.codingchallenge.logic.WeatherForecastGenerator;
 @ContextConfiguration(classes = { WeatherForecastGenerator.class })
 public class WeatherForecastGeneratorTestCase {
 
-//	private static final WeatherForecastGenerator forecastGenerator = WeatherForecastGenerator.getInstance();
 	@Autowired
 	private WeatherForecastGenerator forecastGenerator;
 
-//	@BeforeClass
-//	public static void initContext() {
-//
-//	}
 
 	@Test
 	public void day1ShouldBeUNDETERMINED() {
