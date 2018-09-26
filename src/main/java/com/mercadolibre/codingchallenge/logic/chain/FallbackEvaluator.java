@@ -12,8 +12,8 @@ import com.mercadolibre.codingchallenge.enums.WeatherCondition;
  */
 public class FallbackEvaluator extends PlanetsPositionEvaluator {
 
-	public FallbackEvaluator(PlanetsPositionEvaluator nextEvaluator) {
-		super(nextEvaluator, WeatherCondition.UNDETERMINED);
+	public FallbackEvaluator() {
+		super(null, WeatherCondition.UNDETERMINED);
 	}
 
 	@Override
