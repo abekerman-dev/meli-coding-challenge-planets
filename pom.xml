@@ -6,9 +6,9 @@
 	<groupId>com.mercadolibre</groupId>
 	<artifactId>meli_coding_challenge</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
-	<name>meli_coding_challenge</name>
+	<name>meli-coding-challenge-planets</name>
 	<description>MercadoLibre Coding Challenge</description>
 
 	<parent>
@@ -49,6 +49,5 @@
 			</plugin>
 		</plugins>
 	</build>
-
 
 </project>
