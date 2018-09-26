@@ -9,12 +9,12 @@ package com.mercadolibre.codingchallenge.logic.chain;
  */
 public final class EvaluatorChainFactory {
 
-	private static final PlanetsPositionEvaluator evaluator = init();
+	private static final PlanetsPositionEvaluator evaluator = createEvaluator();
 
 	private EvaluatorChainFactory() {
 	}
 
-	private static PlanetsPositionEvaluator init() {
+	private static PlanetsPositionEvaluator createEvaluator() {
 		PlanetsPositionEvaluator planetsInTriangleWithSunInsideEvaluator = new PlanetsInTriangleWithSunInsideEvaluator(
 				null);
 		PlanetsPositionEvaluator planetsButNotSunAlignedEvaluator = new PlanetsButNotSunAlignedEvaluator(

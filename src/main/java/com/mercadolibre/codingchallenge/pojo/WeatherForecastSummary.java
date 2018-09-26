@@ -22,9 +22,9 @@ public class WeatherForecastSummary {
 		sb.append("Predicción climática para los próximos 10 años:");
 		sb.append(StringUtil.NEW_LINE + StringUtil.NEW_LINE);
 		weatherConditionCount.keySet().stream().sorted().forEach(
-				k -> sb.append("Períodos de " + k + ": " + weatherConditionCount.get(k) + StringUtil.NEW_LINE));
+				k -> sb.append("\tPeríodos de " + k + ": " + weatherConditionCount.get(k) + StringUtil.NEW_LINE));
 		sb.append(StringUtil.NEW_LINE);
-		sb.append("El día de pico máximo de lluvia será: ");
+		sb.append("\tEl día de pico máximo de lluvia será: ");
 		sb.append(maxRainDay);
 
 		return sb.toString();

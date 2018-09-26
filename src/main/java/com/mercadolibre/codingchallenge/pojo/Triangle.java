@@ -3,6 +3,14 @@ package com.mercadolibre.codingchallenge.pojo;
 import java.awt.Polygon;
 import java.awt.geom.Point2D;
 
+/**
+ * Clase que sirve para calcular el perímetro de un triángulo y hereda de
+ * Polygon ya qué esta clase permite determinar si un punto dado está contenido
+ * en una instancia de ella
+ * 
+ * @author andres
+ *
+ */
 public class Triangle extends Polygon {
 
 	/**
@@ -21,7 +29,7 @@ public class Triangle extends Polygon {
 		this.p2 = p2;
 		this.p3 = p3;
 	}
-	
+
 	public double getPerimeter() {
 		return p1.distance(p2) + p2.distance(p3) + p3.distance(p1);
 	}

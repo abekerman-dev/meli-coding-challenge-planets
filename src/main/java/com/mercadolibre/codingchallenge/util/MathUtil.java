@@ -7,7 +7,18 @@ import java.util.List;
 
 import com.mercadolibre.codingchallenge.pojo.Triangle;
 
+/**
+ * Clase que provee métodos estáticos que resuelven operaciones matemáticas
+ * varias
+ * 
+ * @author andres
+ *
+ */
 public class MathUtil {
+
+	private MathUtil() {
+
+	}
 
 	public static double getUnsignedTangentByAngle(int angleDeg) {
 		return truncateTo2DecimalPlaces(Math.abs(Math.tan(Math.toRadians(angleDeg))));
@@ -18,10 +29,7 @@ public class MathUtil {
 	 * @return true si todas las tangentes en la lista son 0
 	 */
 	public static boolean tangentsAreEqual(List<Double> tangents) {
-		return 
-			tangents
-			.stream()
-			.allMatch(tangents.get(0)::equals);
+		return tangents.stream().allMatch(tangents.get(0)::equals);
 	}
 
 	/**
@@ -41,7 +49,8 @@ public class MathUtil {
 	/**
 	 * @param distanceToSun
 	 * @param angleDeg
-	 * @return La posición (x, y) (con 2 dígitos decimales) según la distancia al sol y el ángulo en grados
+	 * @return La posición (x, y) (con 2 dígitos decimales) según la distancia al
+	 *         sol y el ángulo en grados
 	 */
 	public static Point2D getPositionByAngle(int distanceToSun, int angleDeg) {
 		double angleRad = Math.toRadians(angleDeg);
@@ -64,13 +73,9 @@ public class MathUtil {
 	 * @return true si todas las posiciones de la lista están sobre el eje Y
 	 */
 	public static boolean areAllPointsOnYAxis(List<Point2D> planetPositions) {
-		return
-			planetPositions
-			.stream()
-			.map(Point2D::getX)
-			.allMatch(p -> p.intValue() == 0);
+		return planetPositions.stream().map(Point2D::getX).allMatch(p -> p.intValue() == 0);
 	}
-	
+
 	/**
 	 * 
 	 * @param input

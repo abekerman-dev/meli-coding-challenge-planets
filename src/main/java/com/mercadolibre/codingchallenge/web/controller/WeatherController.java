@@ -1,29 +1,55 @@
 package com.mercadolibre.codingchallenge.web.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.mercadolibre.codingchallenge.logic.WeatherForecastGenerator;
 
 /**
- * Único Controller de la aplicación Spring Boot que maneja el request GET que devuelve el clima para un día dado
+ * Único Controller de la aplicación Spring Boot que maneja el request GET que
+ * devuelve el clima para un día dado
+ * 
  * @author andres
  *
  */
-@Controller
+@RestController
 public class WeatherController {
-	
-	WeatherForecastGenerator wfg = WeatherForecastGenerator.getInstance();
 
-	@RequestMapping("/clima")
-	public @ResponseBody String weatherConditionByDay(@RequestParam String dia) {
-		return wfg.getWeatherConditionForDay(Integer.parseInt(dia)).toString();
+	@Autowired
+	WeatherForecastGenerator forecastGenerator;
+
+	@GetMapping("/clima")
+	public DiaClimaJSONResponse weatherConditionByDay(@RequestParam Integer dia) {
+		return new DiaClimaJSONResponse(dia, forecastGenerator.getWeatherConditionForDay(dia).toString());
 	}
 	
-	@RequestMapping("/summary")
-	public @ResponseBody String summary() {
-		return wfg.getForecastSummary().toString();
+	private class DiaClimaJSONResponse {
+		private int dia;
+		private String clima;
+
+		public DiaClimaJSONResponse(int dia, String clima) {
+			this.dia = dia;
+			this.clima = clima;
+		}
+
+		public int getDia() {
+			return dia;
+		}
+
+		public void setDia(int dia) {
+			this.dia = dia;
+		}
+
+		public String getClima() {
+			return clima;
+		}
+
+		public void setClima(String clima) {
+			this.clima = clima;
+		}
+		
 	}
+
 }

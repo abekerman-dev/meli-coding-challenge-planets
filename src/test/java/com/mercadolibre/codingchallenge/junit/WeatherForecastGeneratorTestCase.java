@@ -3,6 +3,10 @@ package com.mercadolibre.codingchallenge.junit;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.mercadolibre.codingchallenge.enums.WeatherCondition;
 import com.mercadolibre.codingchallenge.logic.WeatherForecastGenerator;
@@ -14,9 +18,18 @@ import com.mercadolibre.codingchallenge.logic.WeatherForecastGenerator;
  * @author andres
  *
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = { WeatherForecastGenerator.class })
 public class WeatherForecastGeneratorTestCase {
 
-	private static final WeatherForecastGenerator forecastGenerator = WeatherForecastGenerator.getInstance();
+//	private static final WeatherForecastGenerator forecastGenerator = WeatherForecastGenerator.getInstance();
+	@Autowired
+	private WeatherForecastGenerator forecastGenerator;
+
+//	@BeforeClass
+//	public static void initContext() {
+//
+//	}
 
 	@Test
 	public void day1ShouldBeUNDETERMINED() {

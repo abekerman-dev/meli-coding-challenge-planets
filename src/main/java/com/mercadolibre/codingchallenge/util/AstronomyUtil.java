@@ -14,10 +14,17 @@ public class AstronomyUtil {
 
 	private static final Point SUN = new Point(0, 0);
 
-	public static final List<Planet> PLANETS = Arrays
-			.asList(new Planet[] { Planet.getInstance("Ferengi", 1, RotationType.ROTATION_CLOCKWISE, 500),
-					Planet.getInstance("Vulcano", 5, RotationType.ROTATION_COUNTERCLOCKWISE, 1000),
-					Planet.getInstance("Betasoide", 3, RotationType.ROTATION_CLOCKWISE, 2000) });
+	private static final List<Planet> PLANETS = Arrays.asList(
+			Planet.getInstance("Ferengi", 1, RotationType.ROTATION_CLOCKWISE, 500),
+			Planet.getInstance("Vulcano", 5, RotationType.ROTATION_COUNTERCLOCKWISE, 1000),
+			Planet.getInstance("Betasoide", 3, RotationType.ROTATION_CLOCKWISE, 2000));
+
+	private AstronomyUtil() {
+	}
+
+	public static List<Planet> getPlanets() {
+		return PLANETS;
+	}
 
 	/**
 	 * Determina si los planetas y el sol están alineados entre sí el día dado,

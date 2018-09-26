@@ -10,7 +10,7 @@ public class PlanetsButNotSunAlignedEvaluator extends PlanetsPositionEvaluator {
 	}
 
 	@Override
-	public boolean evaluate(int day) {
+	public boolean test(Integer day) {
 		return AstronomyUtil.arePlanetsButNotSunAligned(day);
 	}
 

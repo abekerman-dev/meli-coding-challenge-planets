@@ -1,12 +1,15 @@
 package com.mercadolibre.codingchallenge.logic;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.mercadolibre.codingchallenge.enums.WeatherCondition;
 import com.mercadolibre.codingchallenge.logic.chain.EvaluatorChainFactory;
@@ -23,10 +26,12 @@ import com.mercadolibre.codingchallenge.util.MathUtil;
  * @author andres
  *
  */
+@Component
+@Scope(value = "singleton")
 public class WeatherForecastGenerator {
 
 	private static final PlanetsPositionEvaluator chainOfEvaluators = EvaluatorChainFactory.getChain();
-	private static final long tenYearsFromNowInDays = DateUtil.tenYearsAsDays();
+	private static final long TEN_YEARS_AS_DAYS = DateUtil.tenYearsAsDays();
 
 	// Indico el initial capacity al construirlo ya que sé que voy a necesitar
 	// exactamente esa cantidad de posiciones y no más
@@ -36,14 +41,8 @@ public class WeatherForecastGenerator {
 	private double maxTrianglePerimeter = 0;
 	private int maxTrianglePerimeterDay = 0;
 
-	private static final WeatherForecastGenerator instance = new WeatherForecastGenerator();
-
 	private WeatherForecastGenerator() {
 		init();
-	}
-
-	public static WeatherForecastGenerator getInstance() {
-		return instance;
 	}
 
 	/**
@@ -68,12 +67,12 @@ public class WeatherForecastGenerator {
 				weatherConditionsFor360Days.stream());
 
 		Map<WeatherCondition, Long> weatherConditionCountForRemainingDays = createWeatherConditionCountMap(
-				weatherConditionsFor360Days.stream().limit(tenYearsFromNowInDays % 360));
+				weatherConditionsFor360Days.stream().limit(TEN_YEARS_AS_DAYS % 360));
 
-		Map<WeatherCondition, Long> weatherConditionCountTotal = new HashMap<>();
+		Map<WeatherCondition, Long> weatherConditionCountTotal = new EnumMap<>(WeatherCondition.class);
 
 		weatherConditionCountFor360Days.forEach((weatherCondition, count) -> weatherConditionCountTotal
-				.put(weatherCondition, count * (tenYearsFromNowInDays / 360)));
+				.put(weatherCondition, count * (TEN_YEARS_AS_DAYS / 360)));
 
 		weatherConditionCountForRemainingDays.forEach((weatherCondition, count) -> weatherConditionCountTotal
 				.put(weatherCondition, weatherConditionCountTotal.get(weatherCondition) + count));
@@ -91,12 +90,12 @@ public class WeatherForecastGenerator {
 			WeatherCondition weatherCondition = chainOfEvaluators.getWeatherConditionForDay(day + 1);
 			weatherConditionsFor360Days.add(weatherCondition);
 			if (WeatherCondition.RAIN.equals(weatherCondition)) {
-				calculateMaxRainDay(day + 1, weatherCondition);
+				calculateMaxRainDay(day + 1);
 			}
 		}
 	}
 
-	private void calculateMaxRainDay(int day, WeatherCondition weatherCondition) {
+	private void calculateMaxRainDay(int day) {
 		double trianglePerimeterForDay = MathUtil.createTriangle(AstronomyUtil.getPlanetPositionsByDay(day))
 				.getPerimeter();
 		if (trianglePerimeterForDay > maxTrianglePerimeter) {
