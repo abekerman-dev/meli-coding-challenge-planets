@@ -81,7 +81,7 @@ public class MathUtil {
 	 * @param input
 	 * @return el input pasado como parámetro truncado a 2 dígitos decimales
 	 */
-	private static double truncateTo2DecimalPlaces(double input) {
+	public static double truncateTo2DecimalPlaces(double input) {
 		return BigDecimal.valueOf(input).setScale(2, RoundingMode.HALF_UP).doubleValue();
 	}
 

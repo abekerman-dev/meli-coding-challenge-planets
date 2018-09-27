@@ -1,4 +1,4 @@
-package com.mercadolibre.codingchallenge.main.console;
+package com.mercadolibre.codingchallenge.main.job;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,33 +11,27 @@ import com.mercadolibre.codingchallenge.pojo.WeatherForecastSummary;
 import com.mercadolibre.codingchallenge.util.StringUtil;
 
 /**
- * Clase principal que ejecuta el cáculo del pronóstico del clima en modo
- * batch/standalone (para invocar desde un CLI)
  * 
  * @author andres
  *
  */
 @Component
-public class Main {
+public class WeatherForecastPersistenceJob {
 
 	@Autowired
 	private WeatherForecastGenerator forecastGenerator;
 	
-	private static Logger log = LoggerFactory.getLogger(Main.class);
+	private static Logger log = LoggerFactory.getLogger(WeatherForecastPersistenceJob.class);
 
 	public static void main(String[] args) {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				WeatherForecastGenerator.class, Main.class)) {
-			Main m = context.getBean(Main.class);
+				WeatherForecastGenerator.class, WeatherForecastPersistenceJob.class)) {
+			WeatherForecastPersistenceJob m = context.getBean(WeatherForecastPersistenceJob.class);
 			m.start();
 		}
 	}
 
 	private void start() {
-		WeatherForecastSummary forecastSummary = forecastGenerator.getForecastSummary();
-		log.info(StringUtil.NEW_LINE);
-		log.info(forecastSummary.toString());
-		log.info(StringUtil.NEW_LINE);
 	}
 
 }

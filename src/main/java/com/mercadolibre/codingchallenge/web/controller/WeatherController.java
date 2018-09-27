@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mercadolibre.codingchallenge.logic.WeatherForecastGenerator;
+import com.mercadolibre.codingchallenge.pojo.DayWeatherPair;
 
 /**
  * Único Controller de la aplicación Spring Boot que maneja el request GET que
@@ -21,35 +22,8 @@ public class WeatherController {
 	WeatherForecastGenerator forecastGenerator;
 
 	@GetMapping("/clima")
-	public DiaClimaJSONResponse weatherConditionByDay(@RequestParam Integer dia) {
-		return new DiaClimaJSONResponse(dia, forecastGenerator.getWeatherConditionForDay(dia).toString());
-	}
-	
-	private class DiaClimaJSONResponse {
-		private int dia;
-		private String clima;
-
-		public DiaClimaJSONResponse(int dia, String clima) {
-			this.dia = dia;
-			this.clima = clima;
-		}
-
-		public int getDia() {
-			return dia;
-		}
-
-		public void setDia(int dia) {
-			this.dia = dia;
-		}
-
-		public String getClima() {
-			return clima;
-		}
-
-		public void setClima(String clima) {
-			this.clima = clima;
-		}
-		
+	public DayWeatherPair weatherConditionByDay(@RequestParam Integer dia) {
+		return new DayWeatherPair(dia, forecastGenerator.getWeatherConditionForDay(dia).toString());
 	}
 
 }

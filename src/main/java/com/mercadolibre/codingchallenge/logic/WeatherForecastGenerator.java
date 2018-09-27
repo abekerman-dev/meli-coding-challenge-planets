@@ -1,8 +1,8 @@
 package com.mercadolibre.codingchallenge.logic;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.EnumMap;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -33,16 +33,20 @@ public class WeatherForecastGenerator {
 	private static final PlanetsPositionEvaluator chainOfEvaluators = EvaluatorChainFactory.getChain();
 	private static final long TEN_YEARS_AS_DAYS = DateUtil.tenYearsAsDays();
 
-	// Indico el initial capacity al construirlo ya que sé que voy a necesitar
-	// exactamente esa cantidad de posiciones y no más
-	// Y evito así el resizing en runtime
-	private final List<WeatherCondition> weatherConditionsFor360Days = new ArrayList<>(360);
+	// La idea de este mapa es tener el registro de qué día hay qué condición para
+	// poder calcular luego el día de máximo pico de lluvia. Este cálculo se hace "a
+	// demanda" y no apenas se construye este objeto. Además, sólo guarda los
+	// primeros 360 días y luego se reutiliza para calcular los totales en 10 años
+	private final Map<Integer, WeatherCondition> weatherConditionByDay = new HashMap<>();
 
-	private double maxTrianglePerimeter = 0;
-	private int maxTrianglePerimeterDay = 0;
-
+	/**
+	 * Calcula la condición climática para cada día entre 1 y 360 (es decir, los
+	 * días con diferentes combinaciones de planetas que determinan el clima)
+	 */
 	private WeatherForecastGenerator() {
-		init();
+		for (int day = 0; day < 360; day++) {
+			weatherConditionByDay.put(day + 1, chainOfEvaluators.getWeatherConditionForDay(day + 1));
+		}
 	}
 
 	/**
@@ -52,60 +56,48 @@ public class WeatherForecastGenerator {
 	 * @return
 	 */
 	public WeatherCondition getWeatherConditionForDay(int day) {
-		return weatherConditionsFor360Days.get((day - 1) % 360);
+		return weatherConditionByDay.get((day + 1) % 360);
 	}
 
 	/**
 	 * Genera el resumen del pronóstico para los próximos 10 años junto con el día
-	 * con el pico de lluvia. Reutiliza la lista de condiciones climáticas para los
-	 * 360 días ya calculada y la usa para contar el total de días con cada clima
+	 * con el máximo pico de lluvia
 	 * 
 	 * @return una instancia del resumen del pronóstico
 	 */
 	public WeatherForecastSummary getForecastSummary() {
-		Map<WeatherCondition, Long> weatherConditionCountFor360Days = createWeatherConditionCountMap(
-				weatherConditionsFor360Days.stream());
-
-		Map<WeatherCondition, Long> weatherConditionCountForRemainingDays = createWeatherConditionCountMap(
-				weatherConditionsFor360Days.stream().limit(TEN_YEARS_AS_DAYS % 360));
-
-		Map<WeatherCondition, Long> weatherConditionCountTotal = new EnumMap<>(WeatherCondition.class);
-
-		weatherConditionCountFor360Days.forEach((weatherCondition, count) -> weatherConditionCountTotal
-				.put(weatherCondition, count * (TEN_YEARS_AS_DAYS / 360)));
-
-		weatherConditionCountForRemainingDays.forEach((weatherCondition, count) -> weatherConditionCountTotal
-				.put(weatherCondition, weatherConditionCountTotal.get(weatherCondition) + count));
-
-		return new WeatherForecastSummary(weatherConditionCountTotal, maxTrianglePerimeterDay);
+		return new WeatherForecastSummary(createWeatherConditionCountTotal(), getMaxTrianglePerimeterDay());
 	}
 
 	/**
-	 * Calcula, por un lado, la condición climática para cada día entre 1 y 360 (es
-	 * decir, los días con diferentes combinaciones de planetas que determinan el
-	 * clima) y por el otro el día con el pico de lluvia de esos 360
+	 * Reutiliza el mapa de condiciones climáticas por día, multiplicando por 10 sus
+	 * cantidades y luego sumando el resto de los días (10 años % 360)
+	 * 
+	 * @return
 	 */
-	private void init() {
-		for (int day = 0; day < 360; day++) {
-			WeatherCondition weatherCondition = chainOfEvaluators.getWeatherConditionForDay(day + 1);
-			weatherConditionsFor360Days.add(weatherCondition);
-			if (WeatherCondition.RAIN.equals(weatherCondition)) {
-				calculateMaxRainDay(day + 1);
-			}
-		}
+	private Map<WeatherCondition, Long> createWeatherConditionCountTotal() {
+		Map<WeatherCondition, Long> weatherConditionCount = weatherConditionByDay.entrySet().stream()
+				.map(Map.Entry::getValue).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+		Map<WeatherCondition, Long> weatherConditionCountTotal = new EnumMap<>(WeatherCondition.class);
+		weatherConditionCount.entrySet().stream()
+				.forEach(entry -> weatherConditionCountTotal.put(entry.getKey(), entry.getValue() * 10));
+
+		weatherConditionByDay.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey))
+				.limit(TEN_YEARS_AS_DAYS % 360).forEach(entry -> weatherConditionCountTotal.put(entry.getValue(),
+						weatherConditionCountTotal.get(entry.getValue()) + 1));
+
+		return weatherConditionCountTotal;
 	}
 
-	private void calculateMaxRainDay(int day) {
-		double trianglePerimeterForDay = MathUtil.createTriangle(AstronomyUtil.getPlanetPositionsByDay(day))
-				.getPerimeter();
-		if (trianglePerimeterForDay > maxTrianglePerimeter) {
-			maxTrianglePerimeter = trianglePerimeterForDay;
-			maxTrianglePerimeterDay = day;
-		}
-	}
+	private int getMaxTrianglePerimeterDay() {
+		Stream<Integer> sortedRainyDays = weatherConditionByDay.entrySet().stream()
+				.filter(entry -> WeatherCondition.RAIN.equals(entry.getValue())).map(Map.Entry::getKey).sorted();
 
-	private Map<WeatherCondition, Long> createWeatherConditionCountMap(Stream<WeatherCondition> startingStream) {
-		return startingStream.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+		return sortedRainyDays
+				.collect(Collectors.toMap(Function.identity(),
+						day -> MathUtil.createTriangle(AstronomyUtil.getPlanetPositionsByDay(day)).getPerimeter()))
+				.entrySet().stream().max(Map.Entry.comparingByValue()).get().getKey();
 	}
 
 }
