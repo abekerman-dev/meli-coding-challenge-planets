@@ -1,37 +1,45 @@
 package com.mercadolibre.codingchallenge.main.job;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
+import java.util.stream.IntStream;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.mercadolibre.codingchallenge.logic.WeatherForecastGenerator;
-import com.mercadolibre.codingchallenge.pojo.WeatherForecastSummary;
-import com.mercadolibre.codingchallenge.util.StringUtil;
+import com.mercadolibre.codingchallenge.pojo.PronosticoDiario;
+import com.mercadolibre.codingchallenge.repository.PronosticoDiarioRepository;
+import com.mercadolibre.codingchallenge.util.DateUtil;
 
-/**
- * 
- * @author andres
- *
- */
 @Component
-public class WeatherForecastPersistenceJob {
+@EntityScan(basePackages = { "com.mercadolibre.codingchallenge" })
+public class WeatherForecastPersistenceJob implements CommandLineRunner {
+
+	@Autowired
+	private PronosticoDiarioRepository repository;
 
 	@Autowired
 	private WeatherForecastGenerator forecastGenerator;
-	
-	private static Logger log = LoggerFactory.getLogger(WeatherForecastPersistenceJob.class);
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				WeatherForecastGenerator.class, WeatherForecastPersistenceJob.class)) {
+				"com.mercadolibre.codingchallenge")) {
 			WeatherForecastPersistenceJob m = context.getBean(WeatherForecastPersistenceJob.class);
-			m.start();
+			m.run(args);
 		}
 	}
 
-	private void start() {
+	@Override
+	public void run(String... args) throws Exception {
+		IntStream.rangeClosed(1, (int) DateUtil.tenYearsAsDays()).boxed().forEach(
+				day -> repository.save(new PronosticoDiario(day, forecastGenerator.getWeatherConditionForDay(day).toString())));
+		
+		List<PronosticoDiario> findAll = repository.findAll();
+		findAll
+			.forEach(System.out::println);
 	}
 
 }

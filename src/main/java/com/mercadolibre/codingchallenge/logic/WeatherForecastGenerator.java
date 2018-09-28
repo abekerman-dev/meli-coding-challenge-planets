@@ -44,9 +44,13 @@ public class WeatherForecastGenerator {
 	 * días con diferentes combinaciones de planetas que determinan el clima)
 	 */
 	private WeatherForecastGenerator() {
-		for (int day = 0; day < 360; day++) {
+		for (int day = 0; day <= 360; day++) {
 			weatherConditionByDay.put(day + 1, chainOfEvaluators.getWeatherConditionForDay(day + 1));
 		}
+	}
+
+	public Map<Integer, WeatherCondition> getWeatherConditionByDay() {
+		return weatherConditionByDay;
 	}
 
 	/**
@@ -56,7 +60,8 @@ public class WeatherForecastGenerator {
 	 * @return
 	 */
 	public WeatherCondition getWeatherConditionForDay(int day) {
-		return weatherConditionByDay.get((day + 1) % 360);
+		int mod = day % 360;
+		return weatherConditionByDay.get(mod == 0 ? 360 : mod);
 	}
 
 	/**

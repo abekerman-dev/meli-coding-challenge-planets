@@ -24,7 +24,7 @@ public class ConsoleRunner {
 	@Autowired
 	private WeatherForecastGenerator forecastGenerator;
 
-	private static Logger log = LoggerFactory.getLogger(ConsoleRunner.class);
+	private static final Logger log = LoggerFactory.getLogger(ConsoleRunner.class);
 
 	public static void main(String[] args) {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
